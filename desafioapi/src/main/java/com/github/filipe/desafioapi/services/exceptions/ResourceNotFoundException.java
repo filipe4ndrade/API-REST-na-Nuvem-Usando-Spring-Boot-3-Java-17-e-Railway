@@ -1,4 +1,4 @@
-package com.github.wesleyav.desafioapi.services.exceptions;
+package com.github.filipe.desafioapi.services.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
 

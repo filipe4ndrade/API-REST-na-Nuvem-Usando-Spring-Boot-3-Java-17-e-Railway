@@ -1,7 +1,8 @@
-package com.github.wesleyav.desafioapi.controllers;
+package com.github.filipe.desafioapi.controllers;
 
 import java.net.URI;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.github.wesleyav.desafioapi.entities.User;
-import com.github.wesleyav.desafioapi.services.UserService;
+import com.github.filipe.desafioapi.entities.User;
+import com.github.filipe.desafioapi.services.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,11 +31,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "User")
 public class UserController {
 
-	private final UserService userService;
-
-	public UserController(UserService userService) {
-		this.userService = userService;
-	}
+	@Autowired
+	private UserService userService;
 
 	@GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Endpoint to list all users in a paginated from")

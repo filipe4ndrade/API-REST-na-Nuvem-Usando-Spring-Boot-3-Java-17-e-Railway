@@ -1,4 +1,4 @@
-package com.github.wesleyav.desafioapi.entities;
+package com.github.filipe.desafioapi.entities;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

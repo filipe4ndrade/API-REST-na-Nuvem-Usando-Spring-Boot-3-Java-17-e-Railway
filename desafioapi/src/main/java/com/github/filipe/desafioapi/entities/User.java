@@ -1,4 +1,4 @@
-package com.github.wesleyav.desafioapi.entities;
+package com.github.filipe.desafioapi.entities;
 
 import java.io.Serializable;
 import java.util.List;

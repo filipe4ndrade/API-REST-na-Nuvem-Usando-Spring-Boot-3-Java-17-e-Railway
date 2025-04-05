@@ -1,4 +1,4 @@
-package com.github.wesleyav.desafioapi.entities;
+package com.github.filipe.desafioapi.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -17,8 +17,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "tb_account")
-public class Account implements Serializable {
+@Table(name = "tb_card")
+public class Card implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -29,12 +29,6 @@ public class Account implements Serializable {
 	@Column(unique = true)
 	private String number;
 
-	private String agency;
-
-	@Column(precision = 13, scale = 2)
-	private BigDecimal balance;
-
-	@Column(name = "additional_limit", precision = 13, scale = 2)
+	@Column(name = "available_limit", precision = 13, scale = 2)
 	private BigDecimal limit;
-
 }

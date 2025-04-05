@@ -1,8 +1,8 @@
-package com.github.wesleyav.desafioapi.repositories;
+package com.github.filipe.desafioapi.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.github.wesleyav.desafioapi.entities.User;
+import com.github.filipe.desafioapi.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 

@@ -1,4 +1,4 @@
-package com.github.wesleyav.desafioapi.controllers.exceptions;
+package com.github.filipe.desafioapi.controllers.exceptions;
 
 import java.io.Serializable;
 import java.time.Instant;

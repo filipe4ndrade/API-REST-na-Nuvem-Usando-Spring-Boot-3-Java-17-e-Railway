@@ -1,26 +1,23 @@
-package com.github.wesleyav.desafioapi.services;
+package com.github.filipe.desafioapi.services;
 
+import com.github.filipe.desafioapi.entities.User;
+import com.github.filipe.desafioapi.repositories.UserRepository;
+import com.github.filipe.desafioapi.services.exceptions.ResourceEmptyException;
+import com.github.filipe.desafioapi.services.exceptions.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.github.wesleyav.desafioapi.entities.User;
-import com.github.wesleyav.desafioapi.repositories.UserRepository;
-import com.github.wesleyav.desafioapi.services.exceptions.ResourceEmptyException;
-import com.github.wesleyav.desafioapi.services.exceptions.ResourceNotFoundException;
-
 import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
 
-	private final UserRepository userRepository;
-
-	public UserService(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+	@Autowired
+	private UserRepository userRepository;
 
 	@Transactional
 	public Page<User> findAllPaged(Integer pageNumber, Integer pageSize) {

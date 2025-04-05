@@ -9,7 +9,7 @@
 		<version>3.1.4</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.github.wesleyav</groupId>
+	<groupId>com.github.filipe</groupId>
 	<artifactId>desafioapi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>desafioapi</name>
