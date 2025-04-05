@@ -1,10 +1,14 @@
 package com.github.filipe.desafioapi.services.impl;
 
+import com.github.filipe.desafioapi.controllers.dto.UserDto;
 import com.github.filipe.desafioapi.entities.User;
 import com.github.filipe.desafioapi.repositories.UserRepository;
 import com.github.filipe.desafioapi.services.UserService;
 import com.github.filipe.desafioapi.services.exceptions.BusinessException;
 import com.github.filipe.desafioapi.services.exceptions.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +31,11 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    @Transactional(readOnly = true)
-    public List<User> findAll() {
-        return this.userRepository.findAll();
+    @Transactional
+    public Page<User> findAllPaged(Integer pageNumber, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        return this.userRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)

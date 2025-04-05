@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.filipe.desafioapi.controllers.dto.UserDto;
+import com.github.filipe.desafioapi.entities.User;
 import com.github.filipe.desafioapi.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -21,14 +24,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Users Controller", description = "RESTful API for managing users.")
 public record UserController(UserService userService) {
 
+
 	@GetMapping
-	@Operation(summary = "Get all users", description = "Retrieve a list of all registered users")
+	@Operation(summary = "Get all users in a paginated from", description = "Retrieve a list of all users in a paginated from")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Operation successful")
 	})
-	public ResponseEntity<List<UserDto>> findAll() {
-		var users = userService.findAll();
-		var usersDto = users.stream().map(UserDto::new).collect(Collectors.toList());
+	public ResponseEntity<List<UserDto>> findAllPaged(@RequestParam(defaultValue = "1") Integer pageNumber,
+												 @RequestParam(defaultValue = "10") Integer pageSize) {
+
+		Page<User> userPage = userService.findAllPaged(pageNumber, pageSize);
+		var usersDto = userPage.stream().map(UserDto::new).collect(Collectors.toList());
 		return ResponseEntity.ok(usersDto);
 	}
 

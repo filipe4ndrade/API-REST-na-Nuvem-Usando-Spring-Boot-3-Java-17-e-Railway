@@ -1,9 +1,11 @@
 package com.github.filipe.desafioapi.services;
 
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public interface CrudService<ID, T> {
-    List<T> findAll();
+    Page<T> findAllPaged(Integer n, Integer q);
     T findById(ID id);
     T create(T entity);
     T update(ID id, T entity);
