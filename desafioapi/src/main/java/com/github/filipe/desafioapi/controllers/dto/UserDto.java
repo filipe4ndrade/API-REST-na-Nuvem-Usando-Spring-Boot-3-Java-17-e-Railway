@@ -2,6 +2,10 @@ package com.github.filipe.desafioapi.controllers.dto;
 
 
 import com.github.filipe.desafioapi.entities.User;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -11,33 +15,45 @@ import static java.util.stream.Collectors.toList;
 
 public record UserDto(
         Long id,
+
+        @NotBlank(message = "Name cannot be blank")
+        @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
         String name,
+
+        @NotNull(message = "Account cannot be null")
+        @Valid
         AccountDto account,
+
+        @NotNull(message = "Card cannot be null")
+        @Valid
         CardDto card,
+
+        @Valid
         List<FeatureDto> features,
+
+        @Valid
         List<NewsDto> news) {
 
     public UserDto(User model) {
         this(
                 model.getId(),
                 model.getName(),
-                ofNullable(model.getAccount()).map(AccountDto::new).orElse(null),
-                ofNullable(model.getCard()).map(CardDto::new).orElse(null),
-                ofNullable(model.getFeatures()).orElse(emptyList()).stream().map(FeatureDto::new).collect(toList()),
-                ofNullable(model.getNews()).orElse(emptyList()).stream().map(NewsDto::new).collect(toList())
+                new AccountDto(model.getAccount()),
+                new CardDto(model.getCard()),
+                model.getFeatures().stream().map(FeatureDto::new).toList(),
+                model.getNews().stream().map(NewsDto::new).toList()
         );
     }
 
     public User toModel() {
-        User model = new User();
-        model.setId(this.id);
-        model.setName(this.name);
-        model.setAccount(ofNullable(this.account).map(AccountDto::toModel).orElse(null));
-        model.setCard(ofNullable(this.card).map(CardDto::toModel).orElse(null));
-        model.setFeatures(ofNullable(this.features).orElse(emptyList()).stream().map(FeatureDto::toModel).collect(toList()));
-        model.setNews(ofNullable(this.news).orElse(emptyList()).stream().map(NewsDto::toModel).collect(toList()));
-        return model;
+        User user = new User();
+        user.setId(this.id);
+        user.setName(this.name);
+        user.setAccount(this.account.toModel());
+        user.setCard(this.card.toModel());
+        user.setFeatures(this.features.stream().map(FeatureDto::toModel).toList());
+        user.setNews(this.news.stream().map(NewsDto::toModel).toList());
+        return user;
     }
-
 }
 
