@@ -1,1 +1,1 @@
-web: java -jar target/desafioapi-0.0.1-SNAPSHOT.jar
+web: java -Dspring.config.import=optional:/var/run/secrets/railway.env -jar target/desafioapi-0.0.1-SNAPSHOT.jar
