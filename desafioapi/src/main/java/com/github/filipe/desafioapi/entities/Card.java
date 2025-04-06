@@ -9,18 +9,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "tb_card")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Card implements Serializable {
-
-	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,5 +27,5 @@ public class Card implements Serializable {
 	private String number;
 
 	@Column(name = "available_limit", precision = 13, scale = 2)
-	private BigDecimal limit;
+	private BigDecimal limit = BigDecimal.ZERO;
 }

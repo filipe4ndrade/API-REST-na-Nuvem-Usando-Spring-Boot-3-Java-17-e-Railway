@@ -1,45 +1,40 @@
 package com.github.filipe.desafioapi.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "tb_user")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements Serializable {
-
-	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(length = 100)
 	private String name;
 
 	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "account_id")
 	private Account account;
 
 	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "card_id")
 	private Card card;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<Feature> features;
+	@JoinColumn(name = "user_id")
+	private List<Feature> features = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private List<News> news;
+	@JoinColumn(name = "user_id")
+	private List<News> news = new ArrayList<>();
 }

@@ -1,13 +1,13 @@
 package com.github.filipe.desafioapi.entities;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
 @MappedSuperclass
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class BaseItem {
 
 	@Id
@@ -17,4 +17,5 @@ public abstract class BaseItem {
 	private String icon;
 
 	private String description;
+
 }
