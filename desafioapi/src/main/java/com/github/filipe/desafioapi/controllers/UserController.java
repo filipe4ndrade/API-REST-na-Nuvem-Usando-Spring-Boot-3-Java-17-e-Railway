@@ -1,89 +1,67 @@
 package com.github.filipe.desafioapi.controllers;
 
 import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
 
+import com.github.filipe.desafioapi.controllers.controllerdoc.UserControllerDoc;
 import com.github.filipe.desafioapi.controllers.dto.UserDto;
-import com.github.filipe.desafioapi.entities.User;
 import com.github.filipe.desafioapi.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/users")
-@Tag(name = "Users Controller", description = "RESTful API for managing users.")
-public record UserController(UserService userService) {
+public class UserController implements UserControllerDoc {
 
+	private final UserService userService;
 
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
+
+	@Override
 	@GetMapping
-	@Operation(summary = "Get all users in a paginated from", description = "Retrieve a list of all users in a paginated from")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Operation successful")
-	})
-	public ResponseEntity<List<UserDto>> findAllPaged(@RequestParam(defaultValue = "1") Integer pageNumber,
-												 @RequestParam(defaultValue = "10") Integer pageSize) {
-
-		Page<User> userPage = userService.findAllPaged(pageNumber, pageSize);
-		var usersDto = userPage.stream().map(UserDto::new).collect(Collectors.toList());
+	public ResponseEntity<Page<UserDto>> findAllPaged(Integer pageNumber, Integer pageSize) {
+		var userPage = userService.findAllPaged(pageNumber, pageSize);
+		var usersDto = userPage.map(UserDto::new);
 		return ResponseEntity.ok(usersDto);
 	}
 
+	@Override
 	@GetMapping("/{id}")
-	@Operation(summary = "Get a user by ID", description = "Retrieve a specific user based on its ID")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Operation successful"),
-			@ApiResponse(responseCode = "404", description = "User not found")
-	})
 	public ResponseEntity<UserDto> findById(@PathVariable Long id) {
 		var user = userService.findById(id);
 		return ResponseEntity.ok(new UserDto(user));
 	}
 
+	@Override
 	@PostMapping
-	@Operation(summary = "Create a new user", description = "Create a new user and return the created user's data")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "201", description = "User created successfully"),
-			@ApiResponse(responseCode = "422", description = "Invalid user data provided")
-	})
-	public ResponseEntity<UserDto> create(@RequestBody UserDto userDto) {
+	public ResponseEntity<UserDto> create(@RequestBody @Valid UserDto userDto) {
 		var user = userService.create(userDto.toModel());
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-				.path("/{id}")
+		URI location = ServletUriComponentsBuilder
+				.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(user.getId())
 				.toUri();
 		return ResponseEntity.created(location).body(new UserDto(user));
 	}
 
+	@Override
 	@PutMapping("/{id}")
-	@Operation(summary = "Update a user", description = "Update the data of an existing user based on its ID")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "User updated successfully"),
-			@ApiResponse(responseCode = "404", description = "User not found"),
-			@ApiResponse(responseCode = "422", description = "Invalid user data provided")
-	})
-	public ResponseEntity<UserDto> update(@PathVariable Long id, @RequestBody UserDto userDto) {
+	public ResponseEntity<UserDto> update(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
 		var user = userService.update(id, userDto.toModel());
 		return ResponseEntity.ok(new UserDto(user));
 	}
 
+	@Override
 	@DeleteMapping("/{id}")
-	@Operation(summary = "Delete a user", description = "Delete an existing user based on its ID")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "User deleted successfully"),
-			@ApiResponse(responseCode = "404", description = "User not found")
-	})
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		userService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
+
 }
