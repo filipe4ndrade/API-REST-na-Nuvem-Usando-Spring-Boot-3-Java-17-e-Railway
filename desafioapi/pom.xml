@@ -60,6 +60,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -67,6 +77,8 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<mainClass>com.github.filipe.desafioapi.DesafioapiApplication</mainClass>
+
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
