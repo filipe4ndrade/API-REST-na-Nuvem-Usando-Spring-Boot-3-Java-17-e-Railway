@@ -1,91 +1,104 @@
 package com.github.filipe.desafioapi.services.impl;
 
-import com.github.filipe.desafioapi.controllers.dto.UserDto;
 import com.github.filipe.desafioapi.entities.User;
 import com.github.filipe.desafioapi.repositories.UserRepository;
 import com.github.filipe.desafioapi.services.UserService;
 import com.github.filipe.desafioapi.services.exceptions.BusinessException;
 import com.github.filipe.desafioapi.services.exceptions.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import static java.util.Optional.ofNullable;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    /**
-     * ID de usuário utilizado na Santander Dev Week 2023.
-     * Por isso, vamos criar algumas regras para mantê-lo integro.
-     */
     private static final Long UNCHANGEABLE_USER_ID = 1L;
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Transactional
-    public Page<User> findAllPaged(Integer pageNumber, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
-        return this.userRepository.findAll(pageable);
-    }
 
     @Transactional(readOnly = true)
+    public Page<User> findAllPaged(Integer page, Integer size) {
+        return userRepository.findAll(PageRequest.of(page, size));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public User findById(Long id) {
-        return this.userRepository.findById(id).orElseThrow(NotFoundException::new);
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + id));
     }
 
+    @Override
     @Transactional
-    public User create(User userToCreate) {
-        ofNullable(userToCreate).orElseThrow(() -> new BusinessException("User to create must not be null."));
-        ofNullable(userToCreate.getAccount()).orElseThrow(() -> new BusinessException("User account must not be null."));
-        ofNullable(userToCreate.getCard()).orElseThrow(() -> new BusinessException("User card must not be null."));
-
-        this.validateChangeableId(userToCreate.getId(), "created");
-        if (userRepository.existsByAccountNumber(userToCreate.getAccount().getNumber())) {
-            throw new BusinessException("This account number already exists.");
-        }
-        if (userRepository.existsByCardNumber(userToCreate.getCard().getNumber())) {
-            throw new BusinessException("This card number already exists.");
-        }
-        return this.userRepository.save(userToCreate);
+    public User create(User user) {
+        validateUniqueConstraints(user);
+        return userRepository.save(user);
     }
 
+    @Override
     @Transactional
-    public User update(Long id, User userToUpdate) {
-        this.validateChangeableId(id, "updated");
-        User dbUser = this.findById(id);
-        if (!dbUser.getId().equals(userToUpdate.getId())) {
-            throw new BusinessException("Update IDs must be the same.");
+    public User update(Long id, User user) {
+        validateChangeableId(id, "updated");
+        User existingUser = findById(id);
+
+        if (!existingUser.getId().equals(user.getId())) {
+            throw new BusinessException("Update IDs must match");
         }
 
-        dbUser.setName(userToUpdate.getName());
-        dbUser.setAccount(userToUpdate.getAccount());
-        dbUser.setCard(userToUpdate.getCard());
-        dbUser.setFeatures(userToUpdate.getFeatures());
-        dbUser.setNews(userToUpdate.getNews());
+        validateUniqueConstraintsOnUpdate(existingUser, user);
+        updateUserFields(existingUser, user);
 
-        return this.userRepository.save(dbUser);
+        return userRepository.save(existingUser);
     }
 
+    @Override
     @Transactional
     public void delete(Long id) {
-        this.validateChangeableId(id, "deleted");
-        User dbUser = this.findById(id);
-        this.userRepository.delete(dbUser);
+        validateChangeableId(id, "deleted");
+        User user = findById(id);
+        userRepository.delete(user);
     }
 
+    private void validateUniqueConstraints(User user) {
+        if (userRepository.existsByAccountNumber(user.getAccount().getNumber())) {
+            throw new BusinessException("Account number already exists");
+        }
+        if (userRepository.existsByCardNumber(user.getCard().getNumber())) {
+            throw new BusinessException("Card number already exists");
+        }
+    }
+
+    private void validateUniqueConstraintsOnUpdate(User existingUser, User updatedUser) {
+        if (!existingUser.getAccount().getNumber().equals(updatedUser.getAccount().getNumber()) &&
+                userRepository.existsByAccountNumber(updatedUser.getAccount().getNumber())) {
+            throw new BusinessException("New account number already exists");
+        }
+
+        if (!existingUser.getCard().getNumber().equals(updatedUser.getCard().getNumber()) &&
+                userRepository.existsByCardNumber(updatedUser.getCard().getNumber())) {
+            throw new BusinessException("New card number already exists");
+        }
+    }
+
+    private void updateUserFields(User existingUser, User updatedUser) {
+        existingUser.setName(updatedUser.getName());
+        existingUser.setAccount(updatedUser.getAccount());
+        existingUser.setCard(updatedUser.getCard());
+        existingUser.setFeatures(new ArrayList<>(updatedUser.getFeatures()));
+        existingUser.setNews(new ArrayList<>(updatedUser.getNews()));
+    }
+
+    //Lógica para impedir atualização e exclusão do usuário 1, pois este será adm
     private void validateChangeableId(Long id, String operation) {
         if (UNCHANGEABLE_USER_ID.equals(id)) {
-            throw new BusinessException("User with ID %d can not be %s.".formatted(UNCHANGEABLE_USER_ID, operation));
+            throw new BusinessException("User with ID %d cannot be %s".formatted(id, operation));
         }
     }
 }
