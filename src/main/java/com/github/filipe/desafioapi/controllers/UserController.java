@@ -6,12 +6,10 @@ import com.github.filipe.desafioapi.controllers.controllerdoc.UserControllerDoc;
 import com.github.filipe.desafioapi.controllers.dto.UserDto;
 import com.github.filipe.desafioapi.services.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @CrossOrigin
 @RestController
