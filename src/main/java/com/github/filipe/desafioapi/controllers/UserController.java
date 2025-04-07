@@ -24,7 +24,8 @@ public class UserController implements UserControllerDoc {
 
 	@Override
 	@GetMapping
-	public ResponseEntity<Page<UserDto>> findAllPaged(Integer pageNumber, Integer pageSize) {
+	public ResponseEntity<Page<UserDto>> findAllPaged(@RequestParam(defaultValue = "0") Integer pageNumber,
+													  @RequestParam(defaultValue = "10") Integer pageSize) {
 		var userPage = userService.findAllPaged(pageNumber, pageSize);
 		var usersDto = userPage.map(UserDto::new);
 		return ResponseEntity.ok(usersDto);

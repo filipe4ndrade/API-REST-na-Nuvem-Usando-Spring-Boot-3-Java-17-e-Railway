@@ -18,7 +18,7 @@ public interface UserControllerDoc {
             @ApiResponse(responseCode = "200", description = "Operation successful")
     })
     ResponseEntity<Page<UserDto>> findAllPaged(
-            @RequestParam(defaultValue = "1") Integer pageNumber,
+            @RequestParam(defaultValue = "0") Integer pageNumber,
             @RequestParam(defaultValue = "10") Integer pageSize
     );
 
